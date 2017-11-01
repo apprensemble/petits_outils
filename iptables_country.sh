@@ -27,12 +27,8 @@ $IPT -P FORWARD ACCEPT
 # create a dir
 [ ! -d $ZONEROOT ] && /bin/mkdir -p $ZONEROOT
  
-# clean old rules
-cleanOldRules
- 
-# create a new iptables list
-$IPT -N $SPAMLIST
- 
+
+#download des pays
 for c  in $ISO
 do
 	# local zone file
@@ -40,6 +36,23 @@ do
  
 	# get fresh zone file
 	$WGET -O $tDB $DLROOT/$c.zone
+done
+
+# clean old rules
+cleanOldRules
+ 
+# create a new iptables list
+$IPT -N $SPAMLIST
+
+ 
+#application des regles
+for c  in $ISO
+do
+	# local zone file
+	tDB=$ZONEROOT/$c.zone
+ 
+	# get fresh zone file
+	#$WGET -O $tDB $DLROOT/$c.zone
  
 	# country specific log message
 	SPAMDROPMSG="$c Country Drop"

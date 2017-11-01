@@ -31,9 +31,21 @@ iptables -A FORWARD -p udp -m limit --limit 1/second -j ACCEPT
 iptables -A FORWARD -p icmp --icmp-type echo-request -m limit --limit 1/second -j ACCEPT
 iptables -A INPUT -i eth0 -p tcp -m multiport --dports 22,25,80,443,587,143,993,465 -m state --state NEW,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -o eth0 -p tcp -m multiport --sports 22,25,80,443,587,143,993,465 -m state --state ESTABLISHED -j ACCEPT
+
+iptables -A INPUT -i eth0 -p udp -m multiport --dports 1194 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -o eth0 -p udp -m multiport --sports 1194 -m state --state ESTABLISHED -j ACCEPT
+
 iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A FORWARD -i eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 iptables -A OUTPUT -m state --state NEW,RELATED,ESTABLISHED -j ACCEPT
+
+
+#openvpn
+iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+#iptables -A FORWARD -i eth0 -o tun0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+#iptables -A FORWARD -s 10.8.0.0/24 -o eth0 -j ACCEPT
+#iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
 
 #inutile
 
