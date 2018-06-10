@@ -3,13 +3,14 @@
 ISO="af cn ru kr tr pk tw sg hk"
 
 ### Set PATH ###
+PO_HOMEDIR=/root/bin/
 IPT=/sbin/iptables
 WGET=/usr/bin/wget
 EGREP=/bin/egrep
 IPSET=/sbin/ipset
 
 #src/dst country
-ZONEROOT="/root/iptables"
+ZONEROOT="${PO_HOMEDIR}iptables"
 DLROOT="http://www.ipdeny.com/ipblocks/data/countries"
 SETCIBLE=country_set
 
@@ -21,6 +22,9 @@ fi
 $IPSET create ${SWAP}$SETCIBLE hash:net
 
 #preparation ipset
+if [ ! -d ${ZONEROOT} ];then
+mkdir ${ZONEROOT}
+fi
 for c in $ISO
 do
 	# local zone file
@@ -39,6 +43,6 @@ if [ -n "${SWAP}" ];then
 $IPSET -W $SETCIBLE ${SWAP}$SETCIBLE
 $IPSET -X ${SWAP}$SETCIBLE
 fi
-/root/bin/iptables_off.sh
+${PO_HOMEDIR}iptables_off.sh
 $IPT -A INPUT -p tcp -m set --match-set $SETCIBLE src -j DROP
-/root/bin/iptables.sh
+${PO_HOMEDIR}iptables.sh
